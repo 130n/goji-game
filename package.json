@@ -1,0 +1,21 @@
+{
+  "name": "kaiju-clash",
+  "version": "0.1.0",
+  "description": "Kaiju Clash - 2D browser fighting game",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "phaser": "^3.90.0"
+  },
+  "devDependencies": {
+    "vite": "^6.0.0",
+    "vitest": "^2.0.0",
+    "terser": "^5.0.0"
+  }
+}
