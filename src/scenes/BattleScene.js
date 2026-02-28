@@ -75,6 +75,14 @@ export class BattleScene extends Phaser.Scene {
         this.createTurnText();
         this.createChargeMeter();
 
+        // ESC to go back to character select
+        this.input.keyboard.on('keydown-ESC', () => {
+            this.scene.start('Select', {
+                mode: this.mode,
+                aiDifficulty: this.aiDifficulty,
+            });
+        });
+
         this.setPhase(PHASE.INTRO);
     }
 

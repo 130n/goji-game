@@ -33,7 +33,12 @@ export class MonsterSprite {
         const spriteKey = `monster_${monsterData.id}`;
         if (scene.textures.exists(spriteKey)) {
             this.body = scene.add.image(x, y, spriteKey).setOrigin(0.5, 0.5);
-            this.body.setDisplaySize(SPRITE_WIDTH, SPRITE_HEIGHT);
+            // Scale to fit within SPRITE_WIDTH x SPRITE_HEIGHT keeping aspect ratio
+            const tex = scene.textures.get(spriteKey);
+            const srcW = tex.getSourceImage().width;
+            const srcH = tex.getSourceImage().height;
+            const scale = Math.min(SPRITE_WIDTH / srcW, SPRITE_HEIGHT / srcH);
+            this.body.setScale(scale);
             this.useSprite = true;
         } else {
             const color = CATEGORY_COLORS[monsterData.category] || 0x888888;
@@ -126,6 +131,13 @@ export class MonsterSprite {
         } else {
             this.body.setScale(facing === 'left' ? -1 : 1, 1);
         }
+    }
+
+    getDisplayHeight() {
+        if (this.useSprite) {
+            return this.body.displayHeight;
+        }
+        return SPRITE_HEIGHT;
     }
 
     destroy() {

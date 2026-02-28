@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
-import { MONSTER_SPRITES, BATTLE_BG } from '../assets/sprites.js';
+import { MONSTERS } from '../config/monsters.js';
+import { BATTLE_BG } from '../assets/sprites.js';
 
 /**
  * Load an SVG data URL into a Phaser texture via Image element.
@@ -9,7 +10,6 @@ function loadSvgTexture(scene, key, dataUrl, width, height) {
     return new Promise((resolve) => {
         const img = new Image();
         img.onload = () => {
-            // Draw onto a canvas at the target size for crisp rendering
             const canvas = document.createElement('canvas');
             canvas.width = width;
             canvas.height = height;
@@ -31,7 +31,7 @@ export class PreloadScene extends Phaser.Scene {
         super('Preload');
     }
 
-    create() {
+    preload() {
         const centerX = 512;
         const centerY = 384;
 
@@ -48,7 +48,7 @@ export class PreloadScene extends Phaser.Scene {
         }).setOrigin(0.5);
 
         // "Loading" label
-        const loadingText = this.add.text(centerX, centerY + 10, 'LOADING...', {
+        this._loadingText = this.add.text(centerX, centerY + 10, 'LOADING...', {
             fontSize: '20px',
             fontFamily: 'monospace',
             color: '#cccccc',
@@ -63,33 +63,37 @@ export class PreloadScene extends Phaser.Scene {
         this.add.rectangle(centerX, barY + barHeight / 2, barWidth + 4, barHeight + 4, 0x333366)
             .setOrigin(0.5);
 
-        const barFill = this.add.rectangle(barX, barY, 0, barHeight, 0xff6600)
+        this._barFill = this.add.rectangle(barX, barY, 0, barHeight, 0xff6600)
             .setOrigin(0, 0);
 
-        // Load all SVG textures manually (data URLs + Phaser loader don't mix)
-        const spriteEntries = Object.entries(MONSTER_SPRITES);
-        const total = spriteEntries.length + 1; // +1 for battle bg
-        let loaded = 0;
+        // Progress events from Phaser loader
+        this.load.on('progress', (value) => {
+            this._barFill.width = barWidth * value;
+            this._loadingText.setText(`LOADING... ${Math.floor(value * 100)}%`);
+        });
 
-        const onProgress = () => {
-            loaded++;
-            const pct = loaded / total;
-            barFill.width = barWidth * pct;
-            loadingText.setText(`LOADING... ${Math.floor(pct * 100)}%`);
+        // Load PNG sprites for all monsters from public/sprites/
+        const monsterIds = Object.keys(MONSTERS);
+        for (const id of monsterIds) {
+            this.load.image(`monster_${id}`, `sprites/${id}.png`);
+        }
+    }
 
-            if (loaded >= total) {
-                this.time.delayedCall(200, () => {
-                    this.scene.start('Menu');
-                });
+    create() {
+        // Set NEAREST filter for pixel art sprites (crisp upscaling)
+        const monsterIds = Object.keys(MONSTERS);
+        for (const id of monsterIds) {
+            const key = `monster_${id}`;
+            if (this.textures.exists(key)) {
+                this.textures.get(key).setFilter(Phaser.Textures.FilterMode.NEAREST);
             }
-        };
-
-        // Load monster sprites
-        for (const [id, url] of spriteEntries) {
-            loadSvgTexture(this, `monster_${id}`, url, 120, 150).then(onProgress);
         }
 
-        // Load battle background
-        loadSvgTexture(this, 'battle_bg', BATTLE_BG, 1024, 768).then(onProgress);
+        // Load battle background SVG (no PNG version yet)
+        loadSvgTexture(this, 'battle_bg', BATTLE_BG, 1024, 768).then(() => {
+            this.time.delayedCall(200, () => {
+                this.scene.start('Menu');
+            });
+        });
     }
 }
