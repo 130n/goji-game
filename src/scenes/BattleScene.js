@@ -173,6 +173,27 @@ export class BattleScene extends Phaser.Scene {
             this, LAYOUT.P2_X, LAYOUT.ATTACKS_Y,
             this.player2Data, P2_KEY_LABELS, -1,
         );
+
+        this.p1Attacks.onAttackTap = (slot) => {
+            if (this.battleState.activePlayer !== 0) return;
+            if (this.inputLocked || this.currentPhase !== PHASE.AWAITING_INPUT) return;
+            this.inputLocked = true;
+            const reactionTime = (performance.now() - this.turnStartTime) / 1000;
+            this.highlightAttackSlot(0, slot);
+            this.unbindAllKeys();
+            this.resolveCurrentTurn(slot, reactionTime, null);
+        };
+
+        this.p2Attacks.onAttackTap = (slot) => {
+            if (this.battleState.activePlayer !== 1) return;
+            if (this.inputLocked || this.currentPhase !== PHASE.AWAITING_INPUT) return;
+            if (this.mode === 'ai') return; // AI controls P2
+            this.inputLocked = true;
+            const reactionTime = (performance.now() - this.turnStartTime) / 1000;
+            this.highlightAttackSlot(1, slot);
+            this.unbindAllKeys();
+            this.resolveCurrentTurn(slot, reactionTime, null);
+        };
     }
 
     createTurnText() {
