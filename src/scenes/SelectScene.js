@@ -58,6 +58,8 @@ export class SelectScene extends Phaser.Scene {
         this.p1Selection = null;
         this.p2Selection = null;
 
+        this.cursorBlinkTween = null;
+
         this.cards = [];
         this.createGrid();
         this.createPreviewPanels();
@@ -312,11 +314,19 @@ export class SelectScene extends Phaser.Scene {
 
     onCardClicked(index) {
         if (this.selectionState === SEL_STATE.P1_SELECTING) {
-            this.p1CursorIndex = index;
-            this.confirmCurrent();
+            if (this.p1CursorIndex === index) {
+                this.confirmCurrent();
+            } else {
+                this.p1CursorIndex = index;
+                this.updateCursors();
+            }
         } else if (this.selectionState === SEL_STATE.P2_SELECTING) {
-            this.p2CursorIndex = index;
-            this.confirmCurrent();
+            if (this.p2CursorIndex === index) {
+                this.confirmCurrent();
+            } else {
+                this.p2CursorIndex = index;
+                this.updateCursors();
+            }
         }
     }
 
@@ -380,13 +390,55 @@ export class SelectScene extends Phaser.Scene {
     }
 
     updateCursors() {
+        // Kill previous blink tween
+        if (this.cursorBlinkTween) {
+            this.cursorBlinkTween.stop();
+            this.cursorBlinkTween = null;
+        }
+
         for (let i = 0; i < this.cards.length; i++) {
             const card = this.cards[i];
-            card.p1Cursor.setAlpha(this.selectionState === SEL_STATE.P1_SELECTING && i === this.p1CursorIndex ? 1 : 0);
-            card.p2Cursor.setAlpha(this.selectionState === SEL_STATE.P2_SELECTING && i === this.p2CursorIndex ? 1 : 0);
-            card.p1Border.setAlpha(this.p1Selection && this.p1Selection.id === card.monster.id ? 1 : 0);
-            card.p2Border.setAlpha(this.p2Selection && this.p2Selection.id === card.monster.id ? 1 : 0);
+
+            // Active cursor (blinking)
+            const showP1Cursor = this.selectionState === SEL_STATE.P1_SELECTING && i === this.p1CursorIndex;
+            const showP2Cursor = this.selectionState === SEL_STATE.P2_SELECTING && i === this.p2CursorIndex;
+            card.p1Cursor.setAlpha(showP1Cursor ? 1 : 0);
+            card.p2Cursor.setAlpha(showP2Cursor ? 1 : 0);
+
+            // Confirmed borders — solid with double frame
+            const p1Confirmed = this.p1Selection && this.p1Selection.id === card.monster.id;
+            const p2Confirmed = this.p2Selection && this.p2Selection.id === card.monster.id;
+            card.p1Border.setAlpha(p1Confirmed ? 1 : 0);
+            card.p2Border.setAlpha(p2Confirmed ? 1 : 0);
+
+            // Double frame for confirmed selections (create inner borders lazily)
+            if (!card.p1InnerBorder) {
+                card.p1InnerBorder = this.add.rectangle(card.x, card.y, CARD_WIDTH - 2, CARD_HEIGHT - 2)
+                    .setStrokeStyle(2, 0x4488ff).setFillStyle().setAlpha(0);
+                card.p2InnerBorder = this.add.rectangle(card.x, card.y, CARD_WIDTH - 2, CARD_HEIGHT - 2)
+                    .setStrokeStyle(2, 0xff4444).setFillStyle().setAlpha(0);
+            }
+            card.p1InnerBorder.setAlpha(p1Confirmed ? 1 : 0);
+            card.p2InnerBorder.setAlpha(p2Confirmed ? 1 : 0);
         }
+
+        // Blink the active cursor
+        const activeCursorTarget = this.selectionState === SEL_STATE.P1_SELECTING
+            ? this.cards[this.p1CursorIndex]?.p1Cursor
+            : this.selectionState === SEL_STATE.P2_SELECTING
+                ? this.cards[this.p2CursorIndex]?.p2Cursor
+                : null;
+
+        if (activeCursorTarget) {
+            this.cursorBlinkTween = this.tweens.add({
+                targets: activeCursorTarget,
+                alpha: { from: 1, to: 0.3 },
+                duration: 500,
+                yoyo: true,
+                repeat: -1,
+            });
+        }
+
         this.updatePreviews();
     }
 
