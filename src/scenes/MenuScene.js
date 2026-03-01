@@ -58,11 +58,29 @@ export class MenuScene extends Phaser.Scene {
         this.menuState = 'main'; // 'main' or 'difficulty'
         this.selectedIndex = 0;
         this.mainButtons = [];
+        this.mainHitRects = [];
         this.difficultyButtons = [];
+        this.difficultyHitRects = [];
 
         this.createMainButtons(centerX);
         this.createDifficultyButtons(centerX);
         this.setupInput();
+
+        // Swipe detection for touch navigation
+        this.input.on('pointerdown', (pointer) => {
+            this.swipeStartY = pointer.y;
+        });
+
+        this.input.on('pointerup', (pointer) => {
+            if (this.swipeStartY === undefined) return;
+            const dy = pointer.y - this.swipeStartY;
+            const MIN_SWIPE = 40;
+            if (Math.abs(dy) > MIN_SWIPE) {
+                this.moveSelection(dy > 0 ? 1 : -1);
+            }
+            this.swipeStartY = undefined;
+        });
+
         this.updateHighlights();
     }
 
@@ -73,24 +91,29 @@ export class MenuScene extends Phaser.Scene {
         const labels = ['1 PLAYER', '2 PLAYERS'];
         for (let i = 0; i < labels.length; i++) {
             const y = startY + i * gap;
-            const text = this.add.text(centerX, y, labels[i], { ...BUTTON_STYLE })
-                .setOrigin(0.5)
+
+            // Invisible hit rect: 400x55, centered on button position
+            const hitRect = this.add.rectangle(centerX, y, 400, 55, 0x000000, 0)
                 .setInteractive({ useHandCursor: true });
 
-            text.on('pointerover', () => {
+            hitRect.on('pointerover', () => {
                 if (this.menuState === 'main') {
                     this.selectedIndex = i;
                     this.updateHighlights();
                 }
             });
 
-            text.on('pointerdown', () => {
+            hitRect.on('pointerdown', () => {
                 if (this.menuState === 'main') {
                     this.selectedIndex = i;
                     this.confirmSelection();
                 }
             });
 
+            const text = this.add.text(centerX, y, labels[i], { ...BUTTON_STYLE })
+                .setOrigin(0.5);
+
+            this.mainHitRects.push(hitRect);
             this.mainButtons.push(text);
         }
     }
@@ -111,6 +134,26 @@ export class MenuScene extends Phaser.Scene {
         for (let i = 0; i < DIFFICULTY_OPTIONS.length; i++) {
             const y = startY + i * gap;
             const label = DIFFICULTY_LABELS[DIFFICULTY_OPTIONS[i]];
+
+            // Invisible hit rect: 400x45, centered on button position
+            const hitRect = this.add.rectangle(centerX, y, 400, 45, 0x000000, 0)
+                .setInteractive({ useHandCursor: true })
+                .setVisible(false);
+
+            hitRect.on('pointerover', () => {
+                if (this.menuState === 'difficulty') {
+                    this.selectedIndex = i;
+                    this.updateHighlights();
+                }
+            });
+
+            hitRect.on('pointerdown', () => {
+                if (this.menuState === 'difficulty') {
+                    this.selectedIndex = i;
+                    this.confirmSelection();
+                }
+            });
+
             const text = this.add.text(centerX, y, label, {
                 fontSize: '26px',
                 fontFamily: 'monospace',
@@ -119,23 +162,9 @@ export class MenuScene extends Phaser.Scene {
                 strokeThickness: 3,
             })
                 .setOrigin(0.5)
-                .setVisible(false)
-                .setInteractive({ useHandCursor: true });
+                .setVisible(false);
 
-            text.on('pointerover', () => {
-                if (this.menuState === 'difficulty') {
-                    this.selectedIndex = i;
-                    this.updateHighlights();
-                }
-            });
-
-            text.on('pointerdown', () => {
-                if (this.menuState === 'difficulty') {
-                    this.selectedIndex = i;
-                    this.confirmSelection();
-                }
-            });
-
+            this.difficultyHitRects.push(hitRect);
             this.difficultyButtons.push(text);
         }
 
@@ -216,12 +245,14 @@ export class MenuScene extends Phaser.Scene {
         this.menuState = 'difficulty';
         this.selectedIndex = 0;
 
-        // Hide main buttons
+        // Hide main buttons and hit rects
         this.mainButtons.forEach((btn) => btn.setVisible(false));
+        this.mainHitRects.forEach((r) => r.setVisible(false));
 
-        // Show difficulty buttons
+        // Show difficulty buttons and hit rects
         this.difficultyHeader.setVisible(true);
         this.difficultyButtons.forEach((btn) => btn.setVisible(true));
+        this.difficultyHitRects.forEach((r) => r.setVisible(true));
         this.backHint.setVisible(true);
 
         this.updateHighlights();
@@ -231,12 +262,14 @@ export class MenuScene extends Phaser.Scene {
         this.menuState = 'main';
         this.selectedIndex = 0;
 
-        // Show main buttons
+        // Show main buttons and hit rects
         this.mainButtons.forEach((btn) => btn.setVisible(true));
+        this.mainHitRects.forEach((r) => r.setVisible(true));
 
-        // Hide difficulty buttons
+        // Hide difficulty buttons and hit rects
         this.difficultyHeader.setVisible(false);
         this.difficultyButtons.forEach((btn) => btn.setVisible(false));
+        this.difficultyHitRects.forEach((r) => r.setVisible(false));
         this.backHint.setVisible(false);
 
         this.updateHighlights();
