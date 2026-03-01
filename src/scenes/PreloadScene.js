@@ -77,6 +77,16 @@ export class PreloadScene extends Phaser.Scene {
         for (const id of monsterIds) {
             this.load.image(`monster_${id}`, `sprites/${id}.png`);
         }
+
+        // Load animation frames (monsters that have them)
+        const ANIM_FRAMES = {
+            rodan: 3,
+        };
+        for (const [id, count] of Object.entries(ANIM_FRAMES)) {
+            for (let i = 0; i < count; i++) {
+                this.load.image(`anim_${id}_idle_${i}`, `sprites/anim/${id}_idle_${i}.png`);
+            }
+        }
     }
 
     create() {
@@ -86,6 +96,17 @@ export class PreloadScene extends Phaser.Scene {
             const key = `monster_${id}`;
             if (this.textures.exists(key)) {
                 this.textures.get(key).setFilter(Phaser.Textures.FilterMode.NEAREST);
+            }
+        }
+
+        // Set NEAREST filter on animation frames too
+        const ANIM_FRAMES = { rodan: 3 };
+        for (const [id, count] of Object.entries(ANIM_FRAMES)) {
+            for (let i = 0; i < count; i++) {
+                const key = `anim_${id}_idle_${i}`;
+                if (this.textures.exists(key)) {
+                    this.textures.get(key).setFilter(Phaser.Textures.FilterMode.NEAREST);
+                }
             }
         }
 

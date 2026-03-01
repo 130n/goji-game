@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { MONSTERS } from '../config/monsters.js';
+import { getIdleFrameKeys, MONSTER_ANIMS } from '../config/animations.js';
 
 const CATEGORY_COLORS = {
     balanced: 0x4488ff,
@@ -172,6 +173,10 @@ export class SelectScene extends Phaser.Scene {
             panel.sprite.destroy();
             panel.sprite = null;
         }
+        if (panel.animTimer) {
+            panel.animTimer.remove();
+            panel.animTimer = null;
+        }
 
         if (!monster) {
             panel.bg.setAlpha(0);
@@ -184,18 +189,44 @@ export class SelectScene extends Phaser.Scene {
 
         const { px, py } = panel;
         const spriteKey = `monster_${monster.id}`;
+        const frameKeys = getIdleFrameKeys(monster.id);
 
         panel.bg.setAlpha(1);
         panel.playerLabel.setAlpha(1);
 
-        if (this.textures.exists(spriteKey)) {
-            panel.sprite = this.add.image(px, py - 20, spriteKey).setOrigin(0.5);
-            const tex = this.textures.get(spriteKey);
+        // Use first animation frame if available, otherwise static sprite
+        const displayKey = frameKeys ? frameKeys[0] : spriteKey;
+
+        if (this.textures.exists(displayKey)) {
+            panel.sprite = this.add.image(px, py - 20, displayKey).setOrigin(0.5);
+            const tex = this.textures.get(displayKey);
             const srcW = tex.getSourceImage().width;
             const srcH = tex.getSourceImage().height;
             const scale = Math.min(PREVIEW_SPRITE_MAX / srcW, PREVIEW_SPRITE_MAX / srcH);
             panel.sprite.setScale(scale);
             if (flipX) panel.sprite.setFlipX(true);
+
+            // Start frame animation if available
+            if (frameKeys && frameKeys.length > 1) {
+                const anim = MONSTER_ANIMS[monster.id];
+                let frameIdx = 0;
+                panel.animTimer = this.time.addEvent({
+                    delay: 1000 / (anim?.frameRate || 6),
+                    loop: true,
+                    callback: () => {
+                        frameIdx = (frameIdx + 1) % frameKeys.length;
+                        if (panel.sprite && this.textures.exists(frameKeys[frameIdx])) {
+                            panel.sprite.setTexture(frameKeys[frameIdx]);
+                            // Recompute scale for this frame (frames may differ slightly in size)
+                            const t = this.textures.get(frameKeys[frameIdx]);
+                            const sw = t.getSourceImage().width;
+                            const sh = t.getSourceImage().height;
+                            const s = Math.min(PREVIEW_SPRITE_MAX / sw, PREVIEW_SPRITE_MAX / sh);
+                            panel.sprite.setScale(s);
+                        }
+                    },
+                });
+            }
         }
 
         const catColor = CATEGORY_COLORS[monster.category] || 0x888888;
