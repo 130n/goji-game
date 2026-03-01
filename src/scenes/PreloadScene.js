@@ -37,7 +37,7 @@ export class PreloadScene extends Phaser.Scene {
         const centerY = 384;
 
         // Background
-        this.add.rectangle(centerX, centerY, 1024, 768, 0x1a1a2e);
+        this.add.rectangle(centerX, centerY, 1024, 768, 0x2a3050);
 
         // Title text
         this.add.text(centerX, centerY - 80, 'KAIJU CLASH', {

@@ -95,8 +95,8 @@ export class BattleScene extends Phaser.Scene {
         if (this.textures.exists('battle_bg')) {
             this.add.image(LAYOUT.CENTER_X, 384, 'battle_bg').setOrigin(0.5, 0.5);
         } else {
-            this.add.rectangle(LAYOUT.CENTER_X, 384, 1024, 768, 0x1a1a2e);
-            this.add.rectangle(LAYOUT.CENTER_X, 480, 900, 2, 0x333366, 0.5);
+            this.add.rectangle(LAYOUT.CENTER_X, 384, 1024, 768, 0x2a3050);
+            this.add.rectangle(LAYOUT.CENTER_X, 480, 900, 2, 0x445577, 0.5);
         }
 
         // Active-turn tint overlays (one per player side)

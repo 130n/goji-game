@@ -27,7 +27,7 @@ export class MenuScene extends Phaser.Scene {
         const centerX = 512;
 
         // Background
-        this.add.rectangle(centerX, 384, 1024, 768, 0x1a1a2e);
+        this.add.rectangle(centerX, 384, 1024, 768, 0x2a3050);
 
         // Title
         this.add.text(centerX, 100, 'KAIJU CLASH', {

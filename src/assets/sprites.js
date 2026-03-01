@@ -214,97 +214,91 @@ export const MONSTER_SPRITES = {
     mechagodzilla: SPRITE_MECHAG,
 };
 
-// ── Battle background — Tokyo skyline + Mount Fuji ──
-const stars = Array.from({ length: 60 }, (_, i) => {
-    const x = (i * 173 + 47) % 1024;
-    const y = (i * 97 + 13) % 300;
-    const r = 0.5 + (i % 3) * 0.5;
-    const o = 0.3 + (i % 4) * 0.2;
-    return `<circle cx="${x}" cy="${y}" r="${r}" fill="white" opacity="${o}"/>`;
-}).join('');
-
+// ── Battle background — Daytime Tokyo skyline + Mount Fuji ──
 export const BATTLE_BG = bgSvg(`
   <defs>
     <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#050520"/>
-      <stop offset="60%" stop-color="#0f1040"/>
-      <stop offset="100%" stop-color="#1a1a3a"/>
+      <stop offset="0%" stop-color="#4488cc"/>
+      <stop offset="50%" stop-color="#77bbee"/>
+      <stop offset="100%" stop-color="#aaddff"/>
     </linearGradient>
     <linearGradient id="fuji" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#667" />
-      <stop offset="100%" stop-color="#334"/>
+      <stop offset="0%" stop-color="#8899aa"/>
+      <stop offset="40%" stop-color="#7788aa"/>
+      <stop offset="100%" stop-color="#556688"/>
+    </linearGradient>
+    <linearGradient id="ground" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#445566"/>
+      <stop offset="100%" stop-color="#334455"/>
     </linearGradient>
   </defs>
 
   <!-- Sky -->
   <rect width="1024" height="768" fill="url(#sky)"/>
 
-  <!-- Stars -->
-  ${stars}
-
-  <!-- Moon -->
-  <circle cx="820" cy="90" r="35" fill="#ffeedd" opacity="0.15"/>
-  <circle cx="820" cy="90" r="32" fill="#ffeedd" opacity="0.1"/>
+  <!-- Clouds -->
+  <ellipse cx="150" cy="80" rx="80" ry="25" fill="white" opacity="0.5"/>
+  <ellipse cx="180" cy="75" rx="50" ry="20" fill="white" opacity="0.6"/>
+  <ellipse cx="700" cy="120" rx="90" ry="22" fill="white" opacity="0.4"/>
+  <ellipse cx="740" cy="115" rx="55" ry="18" fill="white" opacity="0.5"/>
+  <ellipse cx="400" cy="60" rx="60" ry="18" fill="white" opacity="0.35"/>
+  <ellipse cx="900" cy="70" rx="70" ry="20" fill="white" opacity="0.3"/>
 
   <!-- Mount Fuji -->
-  <polygon points="340,440 512,180 684,440" fill="url(#fuji)"/>
-  <polygon points="435,260 512,180 590,260 570,265 512,210 455,265" fill="#ccd" opacity="0.5"/>
+  <polygon points="340,440 512,160 684,440" fill="url(#fuji)"/>
+  <!-- Snow cap -->
+  <polygon points="460,240 512,160 564,240 555,245 512,195 469,245" fill="#eef4ff" opacity="0.85"/>
+  <polygon points="475,250 512,195 550,250" fill="white" opacity="0.5"/>
 
   <!-- Distant hills -->
-  <path d="M0,440 Q120,380 250,420 Q400,390 512,410 Q650,380 780,420 Q900,390 1024,430 L1024,460 L0,460Z"
-    fill="#181830"/>
+  <path d="M0,440 Q120,400 250,425 Q400,405 512,415 Q650,395 780,425 Q900,405 1024,435 L1024,460 L0,460Z"
+    fill="#4a6070"/>
 
   <!-- City skyline (back layer) -->
-  <rect x="60"  y="370" width="30" height="70" fill="#111128"/>
-  <rect x="100" y="340" width="45" height="100" fill="#111128"/>
-  <rect x="155" y="360" width="25" height="80" fill="#111128"/>
-  <rect x="200" y="320" width="35" height="120" fill="#111128"/>
-  <rect x="250" y="355" width="50" height="85" fill="#111128"/>
-  <rect x="320" y="370" width="28" height="70" fill="#111128"/>
-  <rect x="680" y="350" width="40" height="90" fill="#111128"/>
-  <rect x="730" y="330" width="30" height="110" fill="#111128"/>
-  <rect x="775" y="360" width="50" height="80" fill="#111128"/>
-  <rect x="840" y="345" width="35" height="95" fill="#111128"/>
-  <rect x="890" y="370" width="45" height="70" fill="#111128"/>
-  <rect x="950" y="350" width="30" height="90" fill="#111128"/>
+  <rect x="60"  y="370" width="30" height="70" fill="#3a4a5a"/>
+  <rect x="100" y="340" width="45" height="100" fill="#354555"/>
+  <rect x="155" y="360" width="25" height="80" fill="#3a4a5a"/>
+  <rect x="200" y="320" width="35" height="120" fill="#354555"/>
+  <rect x="250" y="355" width="50" height="85" fill="#3a4a5a"/>
+  <rect x="320" y="370" width="28" height="70" fill="#354555"/>
+  <rect x="680" y="350" width="40" height="90" fill="#3a4a5a"/>
+  <rect x="730" y="330" width="30" height="110" fill="#354555"/>
+  <rect x="775" y="360" width="50" height="80" fill="#3a4a5a"/>
+  <rect x="840" y="345" width="35" height="95" fill="#354555"/>
+  <rect x="890" y="370" width="45" height="70" fill="#3a4a5a"/>
+  <rect x="950" y="350" width="30" height="90" fill="#354555"/>
 
   <!-- Tokyo Tower -->
-  <polygon points="500,280 512,440 524,440" fill="#882222" opacity="0.7"/>
-  <polygon points="506,280 512,260 518,280" fill="#cc3333" opacity="0.7"/>
-  <line x1="500" y1="340" x2="524" y2="340" stroke="#aa3333" stroke-width="1.5" opacity="0.5"/>
-  <line x1="502" y1="370" x2="522" y2="370" stroke="#aa3333" stroke-width="1.5" opacity="0.5"/>
-  <line x1="504" y1="400" x2="520" y2="400" stroke="#aa3333" stroke-width="1.5" opacity="0.5"/>
-  <circle cx="512" cy="275" r="2" fill="#ff4444" opacity="0.8"/>
+  <polygon points="500,280 512,440 524,440" fill="#cc4444" opacity="0.8"/>
+  <polygon points="506,280 512,260 518,280" fill="#ee5555" opacity="0.8"/>
+  <line x1="500" y1="340" x2="524" y2="340" stroke="#dd5555" stroke-width="1.5" opacity="0.6"/>
+  <line x1="502" y1="370" x2="522" y2="370" stroke="#dd5555" stroke-width="1.5" opacity="0.6"/>
+  <line x1="504" y1="400" x2="520" y2="400" stroke="#dd5555" stroke-width="1.5" opacity="0.6"/>
+  <circle cx="512" cy="275" r="2" fill="#ff6666" opacity="0.9"/>
 
   <!-- City skyline (front layer) -->
-  <rect x="30"  y="400" width="50" height="40" fill="#0e0e25"/>
-  <rect x="90"  y="385" width="60" height="55" fill="#0e0e25"/>
-  <rect x="160" y="395" width="35" height="45" fill="#0e0e25"/>
-  <rect x="360" y="390" width="55" height="50" fill="#0e0e25"/>
-  <rect x="430" y="405" width="30" height="35" fill="#0e0e25"/>
-  <rect x="570" y="395" width="40" height="45" fill="#0e0e25"/>
-  <rect x="620" y="385" width="50" height="55" fill="#0e0e25"/>
-  <rect x="850" y="400" width="55" height="40" fill="#0e0e25"/>
-  <rect x="920" y="390" width="40" height="50" fill="#0e0e25"/>
+  <rect x="30"  y="400" width="50" height="40" fill="#2e3e4e"/>
+  <rect x="90"  y="385" width="60" height="55" fill="#2e3e4e"/>
+  <rect x="160" y="395" width="35" height="45" fill="#2e3e4e"/>
+  <rect x="360" y="390" width="55" height="50" fill="#2e3e4e"/>
+  <rect x="430" y="405" width="30" height="35" fill="#2e3e4e"/>
+  <rect x="570" y="395" width="40" height="45" fill="#2e3e4e"/>
+  <rect x="620" y="385" width="50" height="55" fill="#2e3e4e"/>
+  <rect x="850" y="400" width="55" height="40" fill="#2e3e4e"/>
+  <rect x="920" y="390" width="40" height="50" fill="#2e3e4e"/>
 
-  <!-- Window lights (scattered yellow dots on buildings) -->
-  <rect x="108" y="350" width="3" height="3" fill="#ffee88" opacity="0.5"/>
-  <rect x="118" y="358" width="3" height="3" fill="#ffee88" opacity="0.3"/>
-  <rect x="112" y="370" width="3" height="3" fill="#ffee88" opacity="0.4"/>
-  <rect x="130" y="345" width="3" height="3" fill="#ffee88" opacity="0.4"/>
-  <rect x="210" y="335" width="3" height="3" fill="#ffee88" opacity="0.5"/>
-  <rect x="218" y="355" width="3" height="3" fill="#ffee88" opacity="0.3"/>
-  <rect x="260" y="365" width="3" height="3" fill="#ffee88" opacity="0.4"/>
-  <rect x="270" y="375" width="3" height="3" fill="#ffee88" opacity="0.3"/>
-  <rect x="695" y="360" width="3" height="3" fill="#ffee88" opacity="0.5"/>
-  <rect x="740" y="345" width="3" height="3" fill="#ffee88" opacity="0.4"/>
-  <rect x="790" y="370" width="3" height="3" fill="#ffee88" opacity="0.3"/>
-  <rect x="855" y="358" width="3" height="3" fill="#ffee88" opacity="0.5"/>
-  <rect x="900" y="378" width="3" height="3" fill="#ffee88" opacity="0.3"/>
-  <rect x="960" y="362" width="3" height="3" fill="#ffee88" opacity="0.4"/>
+  <!-- Window lights -->
+  <rect x="108" y="350" width="3" height="3" fill="#ddeeff" opacity="0.4"/>
+  <rect x="118" y="358" width="3" height="3" fill="#ddeeff" opacity="0.3"/>
+  <rect x="112" y="370" width="3" height="3" fill="#ddeeff" opacity="0.35"/>
+  <rect x="210" y="335" width="3" height="3" fill="#ddeeff" opacity="0.4"/>
+  <rect x="218" y="355" width="3" height="3" fill="#ddeeff" opacity="0.3"/>
+  <rect x="695" y="360" width="3" height="3" fill="#ddeeff" opacity="0.4"/>
+  <rect x="740" y="345" width="3" height="3" fill="#ddeeff" opacity="0.35"/>
+  <rect x="855" y="358" width="3" height="3" fill="#ddeeff" opacity="0.4"/>
 
   <!-- Ground / street -->
-  <rect x="0" y="440" width="1024" height="328" fill="#0c0c20"/>
-  <line x1="0" y1="442" x2="1024" y2="442" stroke="#222244" stroke-width="2"/>
-  <line x1="0" y1="480" x2="1024" y2="480" stroke="#181833" stroke-width="1" opacity="0.4"/>
+  <rect x="0" y="440" width="1024" height="328" fill="url(#ground)"/>
+  <line x1="0" y1="442" x2="1024" y2="442" stroke="#556677" stroke-width="2"/>
+  <line x1="0" y1="480" x2="1024" y2="480" stroke="#4a5a6a" stroke-width="1" opacity="0.4"/>
 `);

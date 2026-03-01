@@ -43,7 +43,7 @@ export class SelectScene extends Phaser.Scene {
     create() {
         this.monsterList = Object.values(MONSTERS);
 
-        this.add.rectangle(512, 384, 1024, 768, 0x1a1a2e);
+        this.add.rectangle(512, 384, 1024, 768, 0x2a3050);
 
         this.add.text(GRID_CENTER_X, 40, 'SELECT YOUR MONSTER', {
             fontSize: '36px',
@@ -89,8 +89,8 @@ export class SelectScene extends Phaser.Scene {
     createCard(x, y, monster, index) {
         const categoryColor = CATEGORY_COLORS[monster.category] || 0x888888;
 
-        const bg = this.add.rectangle(x, y, CARD_WIDTH, CARD_HEIGHT, 0x222244)
-            .setStrokeStyle(2, 0x444466);
+        const bg = this.add.rectangle(x, y, CARD_WIDTH, CARD_HEIGHT, 0x334466)
+            .setStrokeStyle(2, 0x556688);
 
         const stripe = this.add.rectangle(x, y - CARD_HEIGHT / 2 + 8, CARD_WIDTH - 8, 14, categoryColor)
             .setAlpha(0.8);
@@ -146,8 +146,8 @@ export class SelectScene extends Phaser.Scene {
         const py = PREVIEW_Y;
         const panel = {
             px, py,
-            bg: this.add.rectangle(px, py, 200, 340, 0x181830)
-                .setStrokeStyle(2, 0x333366).setAlpha(0),
+            bg: this.add.rectangle(px, py, 200, 340, 0x283048)
+                .setStrokeStyle(2, 0x445577).setAlpha(0),
             playerLabel: this.add.text(px, py - 155, label, {
                 fontSize: '16px', fontFamily: 'monospace',
                 color: labelColor, stroke: '#000000', strokeThickness: 2,
