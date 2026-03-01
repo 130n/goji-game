@@ -1,9 +1,9 @@
 import Phaser from 'phaser';
 import { ATTACK_SLOTS } from '../config/constants.js';
 
-const BUTTON_WIDTH = 300;
-const BUTTON_HEIGHT = 48;
-const BUTTON_GAP = 6;
+const BUTTON_WIDTH = 450;
+const BUTTON_HEIGHT = 72;
+const BUTTON_GAP = 8;
 const DIMMED_ALPHA = 0.4;
 const INDENT_PX = 10;
 const RESULT_MARGIN = 8;
@@ -65,7 +65,7 @@ export class AttackIndicator {
             const keyLabel = Array.isArray(keyLabels) ? keyLabels[i] : keyLabels[slot];
             const labelText = `[${keyLabel}] ${attack.name} (${slot})`;
             const label = scene.add.text(bx, by + BUTTON_HEIGHT / 2, labelText, {
-                fontSize: '18px',
+                fontSize: '24px',
                 fontFamily: 'monospace',
                 color: '#cccccc',
             }).setOrigin(0.5, 0.5);

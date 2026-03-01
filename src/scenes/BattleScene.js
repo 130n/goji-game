@@ -26,9 +26,9 @@ const LAYOUT = {
     P1_X: 200,
     P2_X: 824,
     CENTER_X: 512,
-    TIMER_Y: 520,
+    TIMER_Y: 460,
     TIMER_WIDTH: 300,
-    ATTACKS_Y: 580,
+    ATTACKS_Y: 500,
     HP_BAR_WIDTH: 300,
     HP_BAR_HEIGHT: 20,
 };
