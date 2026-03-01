@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { MONSTERS } from '../config/monsters.js';
+import { MONSTER_ANIMS } from '../config/animations.js';
 import { BATTLE_BG } from '../assets/sprites.js';
 
 /**
@@ -79,11 +80,8 @@ export class PreloadScene extends Phaser.Scene {
         }
 
         // Load animation frames (monsters that have them)
-        const ANIM_FRAMES = {
-            rodan: 3,
-        };
-        for (const [id, count] of Object.entries(ANIM_FRAMES)) {
-            for (let i = 0; i < count; i++) {
+        for (const [id, anim] of Object.entries(MONSTER_ANIMS)) {
+            for (let i = 0; i < anim.idle; i++) {
                 this.load.image(`anim_${id}_idle_${i}`, `sprites/anim/${id}_idle_${i}.png`);
             }
         }
@@ -100,9 +98,8 @@ export class PreloadScene extends Phaser.Scene {
         }
 
         // Set NEAREST filter on animation frames too
-        const ANIM_FRAMES = { rodan: 3 };
-        for (const [id, count] of Object.entries(ANIM_FRAMES)) {
-            for (let i = 0; i < count; i++) {
+        for (const [id, anim] of Object.entries(MONSTER_ANIMS)) {
+            for (let i = 0; i < anim.idle; i++) {
                 const key = `anim_${id}_idle_${i}`;
                 if (this.textures.exists(key)) {
                     this.textures.get(key).setFilter(Phaser.Textures.FilterMode.NEAREST);

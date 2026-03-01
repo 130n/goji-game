@@ -4,6 +4,12 @@
  */
 export const MONSTER_ANIMS = {
     rodan: { idle: 3, frameRate: 6 },
+    anguirus: { idle: 3, frameRate: 6 },
+    mechagodzilla: { idle: 4, frameRate: 6 },
+    godzilla: { idle: 4, frameRate: 6 },
+    ghidorah: { idle: 3, frameRate: 5 },
+    mothra: { idle: 3, frameRate: 8 },
+    gamera: { idle: 3, frameRate: 4 },
 };
 
 /**
