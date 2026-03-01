@@ -4,7 +4,7 @@ export const MONSTERS = {
         name: 'Godzilla',
         category: 'balanced',
         hp: 100,
-        baseDamage: 13,
+        baseDamage: 20,
         speedBonus: 1.0,
         attacks: {
             A: { name: 'Atomic Breath', slot: 'A' },
@@ -17,7 +17,7 @@ export const MONSTERS = {
         name: 'King Kong',
         category: 'balanced',
         hp: 100,
-        baseDamage: 13,
+        baseDamage: 20,
         speedBonus: 1.0,
         attacks: {
             A: { name: 'Primal Punch', slot: 'A' },
@@ -30,7 +30,7 @@ export const MONSTERS = {
         name: 'Gamera',
         category: 'tank',
         hp: 120,
-        baseDamage: 12,
+        baseDamage: 18,
         speedBonus: 0.8,
         attacks: {
             A: { name: 'Plasma Fireball', slot: 'A' },
@@ -43,7 +43,7 @@ export const MONSTERS = {
         name: 'Hedorah',
         category: 'tank',
         hp: 120,
-        baseDamage: 12,
+        baseDamage: 18,
         speedBonus: 0.8,
         attacks: {
             A: { name: 'Sludge Beam', slot: 'A' },
@@ -56,7 +56,7 @@ export const MONSTERS = {
         name: 'Rodan',
         category: 'speed',
         hp: 85,
-        baseDamage: 12,
+        baseDamage: 18,
         speedBonus: 1.5,
         attacks: {
             A: { name: 'Sonic Dive', slot: 'A' },
@@ -69,7 +69,7 @@ export const MONSTERS = {
         name: 'Mothra',
         category: 'speed',
         hp: 85,
-        baseDamage: 11,
+        baseDamage: 17,
         speedBonus: 1.6,
         attacks: {
             A: { name: 'Antenna Beam', slot: 'A' },
@@ -82,7 +82,7 @@ export const MONSTERS = {
         name: 'Anguirus',
         category: 'speed',
         hp: 85,
-        baseDamage: 13,
+        baseDamage: 20,
         speedBonus: 1.4,
         attacks: {
             A: { name: 'Thunder Ball', slot: 'A' },
@@ -95,7 +95,7 @@ export const MONSTERS = {
         name: 'King Ghidorah',
         category: 'bruiser',
         hp: 85,
-        baseDamage: 15,
+        baseDamage: 23,
         speedBonus: 1.0,
         attacks: {
             A: { name: 'Gravity Beam', slot: 'A' },
@@ -108,7 +108,7 @@ export const MONSTERS = {
         name: 'Mecha Godzilla',
         category: 'charger',
         hp: 100,
-        baseDamage: 14,
+        baseDamage: 19,
         speedBonus: 1.0,
         special: 'charge',
         attacks: {

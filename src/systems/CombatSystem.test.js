@@ -126,9 +126,9 @@ describe('resolveAttack', () => {
         const state = createCombatState(MONSTERS.godzilla, MONSTERS.kingkong);
         const result = resolveAttack(state, 'A', 0.1);
         expect(result.hit).toBe(true);
-        expect(result.damage).toBe(7); // 13 * 0.5 = 6.5 → 7
+        expect(result.damage).toBe(10); // 20 * 0.5 = 10
         expect(result.reason).toBe('first_turn');
-        expect(state.players[1].currentHp).toBe(93);
+        expect(state.players[1].currentHp).toBe(90);
         expect(state.activePlayer).toBe(1); // switched to P2
         expect(state.turnNumber).toBe(1);
     });
@@ -140,8 +140,8 @@ describe('resolveAttack', () => {
         // P2 counters with B (B beats A) at instant speed
         const result = resolveAttack(state, 'B', 0.0);
         expect(result.rpsResult).toBe('win');
-        expect(result.damage).toBe(13); // 13 * 1.0 * 1.0
-        expect(state.players[0].currentHp).toBe(87);
+        expect(result.damage).toBe(20); // 20 * 1.0 * 1.0
+        expect(state.players[0].currentHp).toBe(80);
     });
 
     it('same attack deals reduced damage', () => {
@@ -149,7 +149,7 @@ describe('resolveAttack', () => {
         resolveAttack(state, 'A', 0.1); // P1 uses A
         const result = resolveAttack(state, 'A', 0.1); // P2 also uses A
         expect(result.rpsResult).toBe('draw');
-        expect(result.damage).toBe(4); // 13 * 0.3 = 3.9 → 4
+        expect(result.damage).toBe(6); // 20 * 0.3 = 6
     });
 
     it('losing RPS deals 0 damage', () => {
@@ -178,8 +178,8 @@ describe('resolveAttack', () => {
         const result = resolveAttack(state, 'A', 0.1, 0.5); // Mecha uses A vs Godzilla's B
         expect(result.rpsResult).toBe('lose');
         expect(result.malfunctionDamage).toBe(3);
-        // 100 initial - 12 (Godzilla's turn 1 hit: 13 * 1.0 * 0.9 = 11.7 → 12) - 3 malfunction = 85
-        expect(state.players[0].currentHp).toBe(85);
+        // 100 initial - 18 (Godzilla's turn 1 hit: 20 * 1.0 * 0.9 = 18) - 3 malfunction = 79
+        expect(state.players[0].currentHp).toBe(79);
     });
 
     it('game ends when HP reaches 0', () => {
@@ -209,7 +209,7 @@ describe('resolveAttack', () => {
         resolveAttack(state, 'A', 0.1); // Godzilla responds (draw)
         // Mothra's turn: counter Godzilla's A with B
         const result = resolveAttack(state, 'B', 0.0); // instant
-        expect(result.damage).toBe(18); // 11 * 1.6 * 1.0 = 17.6 → 18
+        expect(result.damage).toBe(27); // 17 * 1.6 * 1.0 = 27.2 → 27
     });
 
     it('tank has less speed bonus impact', () => {
@@ -218,6 +218,6 @@ describe('resolveAttack', () => {
         resolveAttack(state, 'A', 0.1); // Godzilla responds (draw)
         // Gamera counters with B
         const result = resolveAttack(state, 'B', 0.0);
-        expect(result.damage).toBe(10); // 12 * 0.8 * 1.0 = 9.6 → 10
+        expect(result.damage).toBe(14); // 18 * 0.8 * 1.0 = 14.4 → 14
     });
 });
