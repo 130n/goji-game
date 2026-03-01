@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { getIdleFrameKeys, MONSTER_ANIMS } from '../config/animations.js';
 
 const CATEGORY_COLORS = {
     balanced: 0x4488ff,
@@ -30,15 +31,20 @@ export class MonsterSprite {
         this.facing = facing;
         this.useSprite = false;
 
-        const spriteKey = `monster_${monsterData.id}`;
+        // Check for animation frames
+        this.frameKeys = getIdleFrameKeys(monsterData.id);
+        this._animTimer = null;
+        this._frameIdx = 0;
+
+        const spriteKey = this.frameKeys ? this.frameKeys[0] : `monster_${monsterData.id}`;
         if (scene.textures.exists(spriteKey)) {
             this.body = scene.add.image(x, y, spriteKey).setOrigin(0.5, 0.5);
             // Scale to fit within SPRITE_WIDTH x SPRITE_HEIGHT keeping aspect ratio
             const tex = scene.textures.get(spriteKey);
             const srcW = tex.getSourceImage().width;
             const srcH = tex.getSourceImage().height;
-            const scale = Math.min(SPRITE_WIDTH / srcW, SPRITE_HEIGHT / srcH);
-            this.body.setScale(scale);
+            this._baseScale = Math.min(SPRITE_WIDTH / srcW, SPRITE_HEIGHT / srcH);
+            this.body.setScale(this._baseScale);
             this.useSprite = true;
         } else {
             const color = CATEGORY_COLORS[monsterData.category] || 0x888888;
@@ -122,6 +128,37 @@ export class MonsterSprite {
             yoyo: true,
             repeat: -1,
         });
+
+        // Start frame animation if available
+        this._startFrameAnim();
+    }
+
+    _startFrameAnim() {
+        if (this._animTimer) {
+            this._animTimer.remove();
+            this._animTimer = null;
+        }
+
+        if (!this.frameKeys || this.frameKeys.length < 2) return;
+
+        const anim = MONSTER_ANIMS[this.monsterData.id];
+        this._frameIdx = 0;
+        this._animTimer = this.scene.time.addEvent({
+            delay: 1000 / (anim?.frameRate || 6),
+            loop: true,
+            callback: () => {
+                this._frameIdx = (this._frameIdx + 1) % this.frameKeys.length;
+                const key = this.frameKeys[this._frameIdx];
+                if (this.body && this.scene.textures.exists(key)) {
+                    this.body.setTexture(key);
+                    const tex = this.scene.textures.get(key);
+                    const srcW = tex.getSourceImage().width;
+                    const srcH = tex.getSourceImage().height;
+                    this._baseScale = Math.min(SPRITE_WIDTH / srcW, SPRITE_HEIGHT / srcH);
+                    this.body.setScale(this._baseScale);
+                }
+            },
+        });
     }
 
     setFlipped(facing) {
@@ -144,6 +181,10 @@ export class MonsterSprite {
         if (this._idleTween) {
             this._idleTween.stop();
             this._idleTween = null;
+        }
+        if (this._animTimer) {
+            this._animTimer.remove();
+            this._animTimer = null;
         }
         this.body.destroy();
         this.nameText.destroy();
