@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import { MONSTERS } from '../config/monsters.js';
 import { MONSTER_ANIMS } from '../config/animations.js';
-import { BATTLE_BG } from '../assets/sprites.js';
+import { BATTLE_BACKGROUNDS } from '../assets/sprites.js';
 
 /**
  * Load an SVG data URL into a Phaser texture via Image element.
@@ -107,8 +107,11 @@ export class PreloadScene extends Phaser.Scene {
             }
         }
 
-        // Load battle background SVG (no PNG version yet)
-        loadSvgTexture(this, 'battle_bg', BATTLE_BG, 1024, 768).then(() => {
+        // Load all battle background SVGs
+        const bgPromises = BATTLE_BACKGROUNDS.map((bg, i) =>
+            loadSvgTexture(this, `battle_bg_${i}`, bg, 1024, 768)
+        );
+        Promise.all(bgPromises).then(() => {
             this.time.delayedCall(200, () => {
                 this.scene.start('Menu');
             });

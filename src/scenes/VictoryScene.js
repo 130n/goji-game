@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { attackSound } from '../systems/AttackSound.js';
 
 const CATEGORY_COLORS = {
     balanced: 0x4488ff,
@@ -23,6 +24,8 @@ export class VictoryScene extends Phaser.Scene {
     }
 
     create() {
+        this.cameras.main.fadeIn(300);
+        attackSound.playVictory();
         const centerX = 512;
 
         // Background
@@ -217,13 +220,21 @@ export class VictoryScene extends Phaser.Scene {
     }
 
     rematch() {
-        this.scene.start('Select', {
-            mode: this.mode,
-            aiDifficulty: this.mode === 'ai' ? this.aiDifficulty : null,
+        attackSound.playBlip();
+        this.cameras.main.fadeOut(300);
+        this.cameras.main.once('camerafadeoutcomplete', () => {
+            this.scene.start('Select', {
+                mode: this.mode,
+                aiDifficulty: this.mode === 'ai' ? this.aiDifficulty : null,
+            });
         });
     }
 
     mainMenu() {
-        this.scene.start('Menu');
+        attackSound.playBlip();
+        this.cameras.main.fadeOut(300);
+        this.cameras.main.once('camerafadeoutcomplete', () => {
+            this.scene.start('Menu');
+        });
     }
 }

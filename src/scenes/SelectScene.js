@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { MONSTERS } from '../config/monsters.js';
 import { getIdleFrameKeys, MONSTER_ANIMS } from '../config/animations.js';
+import { attackSound } from '../systems/AttackSound.js';
 
 const CATEGORY_COLORS = {
     balanced: 0x4488ff,
@@ -41,6 +42,7 @@ export class SelectScene extends Phaser.Scene {
     }
 
     create() {
+        this.cameras.main.fadeIn(300);
         this.monsterList = Object.values(MONSTERS);
 
         this.add.rectangle(512, 384, 1024, 768, 0x2a3050);
@@ -362,6 +364,7 @@ export class SelectScene extends Phaser.Scene {
     }
 
     confirmCurrent() {
+        attackSound.playBlip();
         if (this.selectionState === SEL_STATE.P1_SELECTING) {
             this.p1Selection = this.monsterList[this.p1CursorIndex];
             this.showSelectionFlash(this.p1CursorIndex, 0x4488ff);
@@ -519,16 +522,22 @@ export class SelectScene extends Phaser.Scene {
             this.updateSelectionInfo();
             this.updateControlHint();
         } else {
-            this.scene.start('Menu');
+            this.cameras.main.fadeOut(300);
+            this.cameras.main.once('camerafadeoutcomplete', () => {
+                this.scene.start('Menu');
+            });
         }
     }
 
     startBattle() {
-        this.scene.start('Battle', {
-            player1: this.p1Selection,
-            player2: this.p2Selection,
-            mode: this.mode,
-            aiDifficulty: this.aiDifficulty,
+        this.cameras.main.fadeOut(300);
+        this.cameras.main.once('camerafadeoutcomplete', () => {
+            this.scene.start('Battle', {
+                player1: this.p1Selection,
+                player2: this.p2Selection,
+                mode: this.mode,
+                aiDifficulty: this.aiDifficulty,
+            });
         });
     }
 }

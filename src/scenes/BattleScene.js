@@ -6,6 +6,7 @@ import { HealthBar } from '../ui/HealthBar.js';
 import { TimerBar } from '../ui/TimerBar.js';
 import { AttackIndicator } from '../ui/AttackIndicator.js';
 import { MonsterSprite } from '../ui/MonsterSprite.js';
+import { attackSound } from '../systems/AttackSound.js';
 
 // Battle phase constants
 const PHASE = {
@@ -64,6 +65,7 @@ export class BattleScene extends Phaser.Scene {
     }
 
     create() {
+        this.cameras.main.fadeIn(300);
         this.battleState = createCombatState(this.player1Data, this.player2Data);
 
         this.createBackground();
@@ -77,9 +79,12 @@ export class BattleScene extends Phaser.Scene {
 
         // ESC to go back to character select
         this.input.keyboard.on('keydown-ESC', () => {
-            this.scene.start('Select', {
-                mode: this.mode,
-                aiDifficulty: this.aiDifficulty,
+            this.cameras.main.fadeOut(300);
+            this.cameras.main.once('camerafadeoutcomplete', () => {
+                this.scene.start('Select', {
+                    mode: this.mode,
+                    aiDifficulty: this.aiDifficulty,
+                });
             });
         });
 
@@ -91,9 +96,11 @@ export class BattleScene extends Phaser.Scene {
     // ----------------------------------------------------------------
 
     createBackground() {
-        // Battle background (SVG or fallback)
-        if (this.textures.exists('battle_bg')) {
-            this.add.image(LAYOUT.CENTER_X, 384, 'battle_bg').setOrigin(0.5, 0.5);
+        // Pick a random battle background
+        const bgIdx = Math.floor(Math.random() * 3);
+        const bgKey = `battle_bg_${bgIdx}`;
+        if (this.textures.exists(bgKey)) {
+            this.add.image(LAYOUT.CENTER_X, 384, bgKey).setOrigin(0.5, 0.5);
         } else {
             this.add.rectangle(LAYOUT.CENTER_X, 384, 1024, 768, 0x2a3050);
             this.add.rectangle(LAYOUT.CENTER_X, 480, 900, 2, 0x445577, 0.5);
@@ -489,6 +496,16 @@ export class BattleScene extends Phaser.Scene {
     }
 
     hideChargeMeter() {
+        // Clear charge tint from sprite
+        if (this.isCharging && this.battleState) {
+            const activeIdx = this.battleState.activePlayer;
+            const sprite = activeIdx === 0 ? this.p1Sprite : this.p2Sprite;
+            if (sprite && sprite.useSprite) {
+                sprite.body.clearTint();
+            }
+            // Screen flash on charge release
+            this.cameras.main.flash(100, 255, 255, 255);
+        }
         this.chargeMeterBg.setAlpha(0);
         this.chargeMeterFill.setAlpha(0);
         this.chargeMeterLabel.setAlpha(0);
@@ -507,7 +524,15 @@ export class BattleScene extends Phaser.Scene {
             const r = 255;
             const g = Math.floor(fillPct * 255);
             const b = Math.floor((1 - fillPct) * 255);
-            this.chargeMeterFill.setFillStyle((r << 16) | (g << 8) | b);
+            const chargeColor = (r << 16) | (g << 8) | b;
+            this.chargeMeterFill.setFillStyle(chargeColor);
+
+            // Pulsing tint on charging sprite
+            const activeIdx = this.battleState.activePlayer;
+            const sprite = activeIdx === 0 ? this.p1Sprite : this.p2Sprite;
+            if (sprite.useSprite) {
+                sprite.body.setTint(chargeColor);
+            }
         }
     }
 
@@ -623,6 +648,9 @@ export class BattleScene extends Phaser.Scene {
         const attackerSprite = attackerIdx === 0 ? this.p1Sprite : this.p2Sprite;
         attackerSprite.playAttackAnimation();
 
+        // Play attack sound (next note in Godzilla march)
+        attackSound.playNext();
+
         // Result text (auto-fades)
         let resultLabel;
         let resultColor;
@@ -673,6 +701,12 @@ export class BattleScene extends Phaser.Scene {
             defenderSprite.playHitAnimation();
             defenderHealthBar.setHp(defenderPlayer.currentHp);
 
+            // Screen shake on hit
+            this.cameras.main.shake(150, 0.01);
+
+            // Hit thud sound
+            attackSound.playHit();
+
             const defenderX = defenderIdx === 0 ? LAYOUT.P1_X : LAYOUT.P2_X;
             this.showFloatingDamage(defenderX, LAYOUT.MONSTER_Y - 40, result.damage);
         }
@@ -685,6 +719,9 @@ export class BattleScene extends Phaser.Scene {
 
             atkSprite.playHitAnimation();
             attackerHealthBar.setHp(attackerPlayer.currentHp);
+
+            // Screen shake for malfunction too
+            this.cameras.main.shake(150, 0.01);
 
             const attackerX = attackerIdx === 0 ? LAYOUT.P1_X : LAYOUT.P2_X;
             this.showMalfunctionEffect(attackerX, LAYOUT.MONSTER_Y);
@@ -779,15 +816,18 @@ export class BattleScene extends Phaser.Scene {
         const winnerData = winnerIdx === 0 ? this.player1Data : this.player2Data;
         const loserData = winnerIdx === 0 ? this.player2Data : this.player1Data;
 
-        // Transition to VictoryScene after 2 seconds
+        // Transition to VictoryScene after 2 seconds with fade
         this.time.delayedCall(2000, () => {
-            this.scene.start('Victory', {
-                winner: winnerData,
-                loser: loserData,
-                winnerPlayer: winnerIdx + 1, // 1-indexed for display
-                battleLog: this.battleState.log,
-                mode: this.mode,
-                aiDifficulty: this.aiDifficulty,
+            this.cameras.main.fadeOut(300);
+            this.cameras.main.once('camerafadeoutcomplete', () => {
+                this.scene.start('Victory', {
+                    winner: winnerData,
+                    loser: loserData,
+                    winnerPlayer: winnerIdx + 1, // 1-indexed for display
+                    battleLog: this.battleState.log,
+                    mode: this.mode,
+                    aiDifficulty: this.aiDifficulty,
+                });
             });
         });
     }

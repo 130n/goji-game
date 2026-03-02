@@ -214,8 +214,8 @@ export const MONSTER_SPRITES = {
     mechagodzilla: SPRITE_MECHAG,
 };
 
-// ── Battle background — Daytime Tokyo skyline + Mount Fuji ──
-export const BATTLE_BG = bgSvg(`
+// ── Shared SVG fragments ──
+const SKY_DEFS = `
   <defs>
     <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0%" stop-color="#4488cc"/>
@@ -232,23 +232,57 @@ export const BATTLE_BG = bgSvg(`
       <stop offset="100%" stop-color="#334455"/>
     </linearGradient>
   </defs>
+  <rect width="1024" height="768" fill="url(#sky)"/>`;
 
-  <!-- Sky -->
-  <rect width="1024" height="768" fill="url(#sky)"/>
-
-  <!-- Clouds -->
+const CLOUDS = `
   <ellipse cx="150" cy="80" rx="80" ry="25" fill="white" opacity="0.5"/>
   <ellipse cx="180" cy="75" rx="50" ry="20" fill="white" opacity="0.6"/>
   <ellipse cx="700" cy="120" rx="90" ry="22" fill="white" opacity="0.4"/>
   <ellipse cx="740" cy="115" rx="55" ry="18" fill="white" opacity="0.5"/>
   <ellipse cx="400" cy="60" rx="60" ry="18" fill="white" opacity="0.35"/>
-  <ellipse cx="900" cy="70" rx="70" ry="20" fill="white" opacity="0.3"/>
+  <ellipse cx="900" cy="70" rx="70" ry="20" fill="white" opacity="0.3"/>`;
 
-  <!-- Mount Fuji -->
-  <polygon points="340,440 512,160 684,440" fill="url(#fuji)"/>
+const GROUND = `
+  <rect x="0" y="440" width="1024" height="328" fill="url(#ground)"/>
+  <line x1="0" y1="442" x2="1024" y2="442" stroke="#556677" stroke-width="2"/>
+  <line x1="0" y1="480" x2="1024" y2="480" stroke="#4a5a6a" stroke-width="1" opacity="0.4"/>`;
+
+// ── BG_FUJI — Mount Fuji nature scene (no buildings) ──
+const BG_FUJI = bgSvg(`
+  ${SKY_DEFS}
+  ${CLOUDS}
+
+  <!-- Mount Fuji (wider ~135° angle) -->
+  <polygon points="200,440 512,140 824,440" fill="url(#fuji)"/>
   <!-- Snow cap -->
-  <polygon points="460,240 512,160 564,240 555,245 512,195 469,245" fill="#eef4ff" opacity="0.85"/>
-  <polygon points="475,250 512,195 550,250" fill="white" opacity="0.5"/>
+  <polygon points="420,260 512,140 604,260 592,266 512,180 432,266" fill="#eef4ff" opacity="0.85"/>
+  <polygon points="445,272 512,180 580,272" fill="white" opacity="0.5"/>
+
+  <!-- Distant hills -->
+  <path d="M0,440 Q120,400 250,425 Q400,405 512,415 Q650,395 780,425 Q900,405 1024,435 L1024,460 L0,460Z"
+    fill="#4a6070"/>
+
+  <!-- Green treeline / hills at base -->
+  <path d="M0,430 Q60,410 120,425 Q180,415 240,428 Q300,408 360,425 L360,440 L0,440Z" fill="#2a5533"/>
+  <path d="M660,425 Q720,408 780,422 Q840,412 900,428 Q960,415 1024,430 L1024,440 L660,440Z" fill="#2a5533"/>
+  <path d="M0,438 Q80,428 160,436 Q240,426 320,438 L320,445 L0,445Z" fill="#1e4428" opacity="0.7"/>
+  <path d="M700,436 Q780,426 860,438 Q940,428 1024,436 L1024,445 L700,445Z" fill="#1e4428" opacity="0.7"/>
+
+  <!-- Scattered trees (triangle silhouettes) -->
+  <polygon points="80,430 90,405 100,430" fill="#1e4428" opacity="0.6"/>
+  <polygon points="140,428 148,408 156,428" fill="#1e4428" opacity="0.5"/>
+  <polygon points="220,432 230,410 240,432" fill="#1e4428" opacity="0.6"/>
+  <polygon points="790,428 800,406 810,428" fill="#1e4428" opacity="0.6"/>
+  <polygon points="870,432 878,414 886,432" fill="#1e4428" opacity="0.5"/>
+  <polygon points="950,430 958,412 966,430" fill="#1e4428" opacity="0.6"/>
+
+  ${GROUND}
+`);
+
+// ── BG_TOKYO — Tokyo skyline with Tokyo Tower ──
+const BG_TOKYO = bgSvg(`
+  ${SKY_DEFS}
+  ${CLOUDS}
 
   <!-- Distant hills -->
   <path d="M0,440 Q120,400 250,425 Q400,405 512,415 Q650,395 780,425 Q900,405 1024,435 L1024,460 L0,460Z"
@@ -261,6 +295,8 @@ export const BATTLE_BG = bgSvg(`
   <rect x="200" y="320" width="35" height="120" fill="#354555"/>
   <rect x="250" y="355" width="50" height="85" fill="#3a4a5a"/>
   <rect x="320" y="370" width="28" height="70" fill="#354555"/>
+  <rect x="420" y="335" width="40" height="105" fill="#354555"/>
+  <rect x="560" y="350" width="35" height="90" fill="#3a4a5a"/>
   <rect x="680" y="350" width="40" height="90" fill="#3a4a5a"/>
   <rect x="730" y="330" width="30" height="110" fill="#354555"/>
   <rect x="775" y="360" width="50" height="80" fill="#3a4a5a"/>
@@ -297,8 +333,71 @@ export const BATTLE_BG = bgSvg(`
   <rect x="740" y="345" width="3" height="3" fill="#ddeeff" opacity="0.35"/>
   <rect x="855" y="358" width="3" height="3" fill="#ddeeff" opacity="0.4"/>
 
-  <!-- Ground / street -->
-  <rect x="0" y="440" width="1024" height="328" fill="url(#ground)"/>
-  <line x1="0" y1="442" x2="1024" y2="442" stroke="#556677" stroke-width="2"/>
-  <line x1="0" y1="480" x2="1024" y2="480" stroke="#4a5a6a" stroke-width="1" opacity="0.4"/>
+  ${GROUND}
 `);
+
+// ── BG_OSAKA — Osaka castle scene ──
+const BG_OSAKA = bgSvg(`
+  ${SKY_DEFS}
+  ${CLOUDS}
+
+  <!-- Green hills backdrop -->
+  <path d="M0,400 Q150,350 300,380 Q450,340 600,370 Q750,350 900,380 Q980,360 1024,390 L1024,440 L0,440Z"
+    fill="#2a5533"/>
+  <path d="M0,420 Q200,390 400,415 Q600,390 800,415 Q950,400 1024,420 L1024,440 L0,440Z"
+    fill="#1e4428" opacity="0.7"/>
+
+  <!-- Osaka Castle — 3-tiered pagoda silhouette -->
+  <!-- Base tier (widest) -->
+  <rect x="440" y="370" width="144" height="70" fill="#3a4a5a"/>
+  <polygon points="425,370 512,355 599,370" fill="#4a5a6a"/>
+  <!-- Curved eaves base -->
+  <path d="M425,370 Q420,374 415,372 L425,370Z" fill="#3a4a5a"/>
+  <path d="M599,370 Q604,374 609,372 L599,370Z" fill="#3a4a5a"/>
+
+  <!-- Middle tier -->
+  <rect x="462" y="320" width="100" height="50" fill="#3a4a5a"/>
+  <polygon points="448,320 512,305 576,320" fill="#4a5a6a"/>
+  <!-- Curved eaves mid -->
+  <path d="M448,320 Q443,324 438,322 L448,320Z" fill="#3a4a5a"/>
+  <path d="M576,320 Q581,324 586,322 L576,320Z" fill="#3a4a5a"/>
+
+  <!-- Top tier -->
+  <rect x="484" y="280" width="56" height="25" fill="#3a4a5a"/>
+  <polygon points="475,280 512,265 549,280" fill="#4a5a6a"/>
+  <!-- Curved eaves top -->
+  <path d="M475,280 Q470,284 466,282 L475,280Z" fill="#3a4a5a"/>
+  <path d="M549,280 Q554,284 558,282 L549,280Z" fill="#3a4a5a"/>
+
+  <!-- Castle spire -->
+  <line x1="512" y1="265" x2="512" y2="245" stroke="#5a6a7a" stroke-width="2"/>
+  <circle cx="512" cy="243" r="3" fill="#ffd700" opacity="0.8"/>
+
+  <!-- Castle windows/details -->
+  <rect x="494" y="288" width="8" height="6" fill="#223344" opacity="0.6"/>
+  <rect x="522" y="288" width="8" height="6" fill="#223344" opacity="0.6"/>
+  <rect x="478" y="330" width="8" height="8" fill="#223344" opacity="0.5"/>
+  <rect x="502" y="330" width="8" height="8" fill="#223344" opacity="0.5"/>
+  <rect x="526" y="330" width="8" height="8" fill="#223344" opacity="0.5"/>
+  <rect x="550" y="330" width="8" height="8" fill="#223344" opacity="0.5"/>
+
+  <!-- Low traditional buildings (wider, shorter) -->
+  <rect x="60"  y="400" width="80" height="40" fill="#2e3e4e"/>
+  <polygon points="55,400 100,385 145,400" fill="#354555"/>
+  <rect x="180" y="405" width="70" height="35" fill="#2e3e4e"/>
+  <polygon points="175,405 215,392 255,405" fill="#354555"/>
+  <rect x="700" y="400" width="80" height="40" fill="#2e3e4e"/>
+  <polygon points="695,400 740,385 785,400" fill="#354555"/>
+  <rect x="830" y="405" width="90" height="35" fill="#2e3e4e"/>
+  <polygon points="825,405 875,390 925,405" fill="#354555"/>
+
+  <!-- Stone wall base for castle -->
+  <path d="M420,440 L420,420 Q460,410 512,408 Q564,410 604,420 L604,440Z" fill="#556677"/>
+  <line x1="420" y1="430" x2="604" y2="430" stroke="#667788" stroke-width="1" opacity="0.5"/>
+
+  ${GROUND}
+`);
+
+// ── Battle backgrounds array (legacy alias + new array) ──
+export const BATTLE_BG = BG_FUJI;
+export const BATTLE_BACKGROUNDS = [BG_FUJI, BG_TOKYO, BG_OSAKA];

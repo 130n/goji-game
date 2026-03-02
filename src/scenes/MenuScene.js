@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { attackSound } from '../systems/AttackSound.js';
 
 const BUTTON_STYLE = {
     fontSize: '28px',
@@ -24,10 +25,14 @@ export class MenuScene extends Phaser.Scene {
     }
 
     create() {
+        this.cameras.main.fadeIn(300);
         const centerX = 512;
 
-        // Background
-        this.add.rectangle(centerX, 384, 1024, 768, 0x2a3050);
+        // Background — Fuji bg with dark overlay for readability
+        if (this.textures.exists('battle_bg_0')) {
+            this.add.image(centerX, 384, 'battle_bg_0').setOrigin(0.5);
+        }
+        this.add.rectangle(centerX, 384, 1024, 768, 0x000000, 0.4);
 
         // Title
         this.add.text(centerX, 100, 'KAIJU CLASH', {
@@ -227,17 +232,24 @@ export class MenuScene extends Phaser.Scene {
     }
 
     confirmSelection() {
+        attackSound.playBlip();
         if (this.menuState === 'main') {
             if (this.selectedIndex === 0) {
                 // 1 PLAYER -> show difficulty menu
                 this.showDifficultyMenu();
             } else {
-                // 2 PLAYERS -> go directly to select
-                this.scene.start('Select', { mode: 'local', aiDifficulty: null });
+                // 2 PLAYERS -> go directly to select with fade
+                this.cameras.main.fadeOut(300);
+                this.cameras.main.once('camerafadeoutcomplete', () => {
+                    this.scene.start('Select', { mode: 'local', aiDifficulty: null });
+                });
             }
         } else if (this.menuState === 'difficulty') {
             const difficulty = DIFFICULTY_OPTIONS[this.selectedIndex];
-            this.scene.start('Select', { mode: 'ai', aiDifficulty: difficulty });
+            this.cameras.main.fadeOut(300);
+            this.cameras.main.once('camerafadeoutcomplete', () => {
+                this.scene.start('Select', { mode: 'ai', aiDifficulty: difficulty });
+            });
         }
     }
 
